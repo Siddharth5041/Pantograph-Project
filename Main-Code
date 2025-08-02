@@ -1,0 +1,112 @@
+#include <Arduino.h>
+#include <math.h>
+#include <Servo.h>
+
+//Pins for respective servos
+#define LOWER_ARM_PIN 2
+#define UPPER_ARM_PIN 3
+
+//Max and min angle
+#define MAX_ANGLE 130
+#define MIN_ANGLE 25
+
+//Length of arms
+#define length_f 10
+#define length_d 5
+
+//Other parameters
+#define increment 1
+#define increment_delay 10
+
+Servo lower_arm;
+Servo upper_arm;
+
+//Setting up the servos
+void setup(){
+  lower_arm.attach(LOWER_ARM_PIN);
+  upper_arm.attach(UPPER_ARM_PIN);
+  delay(1000);
+}
+
+void move_to(float x, float y)
+{
+  float d_square = (x*x + y*y);
+
+  // Define theta_1 and theta_2
+  float theta_2 = (acosf((length_d * length_d + d_square - length_f * length_f) / (2* length_d * sqrt(d_square)))) * 180/PI;
+  float theta_1 = atanf(y/x) * 180/PI;
+
+  float theta = round(theta_1 + theta_2);
+  float beta = round(theta_2 - theta_1);
+
+  if (theta > MAX_ANGLE)
+    theta = MAX_ANGLE;
+  else if (theta < MIN_ANGLE)
+    theta = MIN_ANGLE;
+  if (beta > MAX_ANGLE)
+    beta = MAX_ANGLE;
+  else if (beta < MIN_ANGLE)
+    beta = MIN_ANGLE;
+
+  upper_arm.write(theta);
+  lower_arm.write(beta);
+}
+
+void draw_line(float x1, float y1, float x2, float y2){
+
+  float delta_x = x2-x1;
+  float delta_y = y2-y1;
+
+  float distance = sqrt(delta_x*delta_x + delta_y*delta_y);
+
+  double theta = atan2(delta_y, delta_x);
+
+  float x_inc = increment * cos(theta);
+  float y_inc = increment * sin(theta);
+
+  double steps = floor(distance/ increment);
+
+  for (double step_count = 0; step_count < steps; ++step_count){
+    move_to(x1 + x_inc*step_count, y1+ y_inc*step_count);
+    delay(increment_delay);
+  }
+
+}
+
+void arc(float cx, float cy, float r, float theta_1, float theta_2)
+{
+  for(flaot i = theta_1; i<theta_2; i++){
+    move_to(cx+r*cos((i*PI)/180), cy+r*sin((i*PI)/180));
+    delay(increment_delay);
+  }
+}
+
+void circle(float cx, float cy, float r)
+{
+  arc(cx, cy, r, 0, 360);
+}
+
+void setup()
+{
+    lower_arm.attach(LOWER_ARM_PIN);
+    upper_arm.attach(UPPER_ARM_PIN);
+    delay(1000);
+}
+
+
+void loop()
+{
+  for(int i=0; i<4; i++)
+  {
+    draw_line(3,4,2,7);
+    delay(1000);
+    draw_line(2,7,4,6,);
+    delay(1000);
+    draw_line(4,6,3,4);
+  }
+
+  for(int i = 0; i<4; i++){
+    circle(2.5, 5.5, 1.5811);
+  }
+
+}
