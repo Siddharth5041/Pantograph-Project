@@ -86,6 +86,12 @@ void circle(float cx, float cy, float r)
   arc(cx, cy, r, 0, 360);
 }
 
+void setup()
+{
+    lower_arm.attach(LOWER_ARM_PIN);
+    upper_arm.attach(UPPER_ARM_PIN);
+    delay(1000);
+}
 
 void loop()
 {
