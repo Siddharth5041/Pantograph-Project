@@ -11,4 +11,5 @@ This is a pantograph mechanis, which is controlled by using two servo motors via
 - Jumper Wires
 - Breadboard(optional)
 
-## Code Overview
+## Working of the Pantograph
+- What we have essentially done is that, each motor will control on of the arm and for each  of them we have calculated the 
